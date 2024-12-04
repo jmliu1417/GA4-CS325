@@ -8,7 +8,7 @@
 '''
 from collections import defaultdict
 
-#parsing inputs into an instance dictionary or class format
+# Parse the input file into instances
 def parse_input(file_path):
     instances = []
     
@@ -21,10 +21,8 @@ def parse_input(file_path):
         line = line.strip()
         
         if line == "***":
-            # If we were already processing an instance, save it
             if current_instance is not None:
                 instances.append(current_instance)
-            # Start a new instance
             current_instance = {
                 'num_switches': 0,
                 'num_lights': 0,
@@ -44,182 +42,29 @@ def parse_input(file_path):
                 # Following lines: connections for each switch
                 current_instance['connections'].append(list(map(int, line.split(','))))
     
-    # Don't forget to add the last instance if it exists
     if current_instance is not None:
         instances.append(current_instance)
     
     return instances
 
-# file_path = 'inputs/input1.txt'  # Adjust the path as necessary
-# instances = parse_input(file_path)
-
-# # Print the parsed instances for verification
-# for i, instance in enumerate(instances):
-#     print(f"Instance {i + 1}:")
-#     print(f"  Number of Switches: {instance['num_switches']}")
-#     print(f"  Number of Lights: {instance['num_lights']}")
-#     print(f"  Initial State: {instance['initial_state']}")
-#     print(f"  Connections: {instance['connections']}")
-
-class Formula:
-    def __init__(self):
-        self.clauses = []
-
-    def add_clause(self, clause):
-        self.clauses.append(clause)
-
-    def __str__(self):
-        return '\n'.join([' '.join(clause) for clause in self.clauses])
-
-def convert_to_2sat(instances):
-    formula = Formula()
-    
-    for instance in instances:
-        num_switches = instance['num_switches']
-        num_lights = instance['num_lights']
-        initial_state = instance['initial_state']
-        connections = instance['connections']
-        
-        # Create clauses based on the initial state of the lights
-        for j in range(num_lights):
-            if initial_state[j] == 1:  # Light L_j is ON
-                # We need at least one switch connected to L_j to be ON
-                connected_switches = []
-                for i in range(num_switches):
-                    if (j + 1) in connections[i]:  # +1 because lights are 1-indexed
-                        connected_switches.append(f'S_{i + 1}')  # Switches are also 1-indexed
-                
-                # Create the clause: (S_i1 OR S_i2 OR ... OR S_ik) => ~L_j
-                if connected_switches:
-                    # We can create a clause for each switch
-                    for switch in connected_switches:
-                        formula.add_clause([switch, f'~L_{j + 1}'])  # S_i OR ~L_j
-
-    return formula
-
-# Example usage
-file_path = 'inputs/input1.txt'  # Adjust the path as necessary
-instances = parse_input(file_path)  # Assuming parse_input function is defined
-
-formula = convert_to_2sat(instances)
-
-# Print the resulting clauses
-print(formula)
-
-
-# def convertor(input_file_path):
-#     instances = parse_input(input_file_path)
-    
-#     m = {instances['num_switches']}
-#     n = {instances['num_lights']}
-#     initial_state = {instances['initial_state']}
-#     connections = {instances['connections']}
-    
-#     clauses = []
-    
-#     for instance in n:
-        
-        
-    
-    
-    
-def can_turn_off_lights(input_file_path, output_file_path):
-    '''
-        This function will contain your code.  It wil read from the file <input_file_path>,
-        and will write its output to the file <output_file_path>.
-    '''
-  
-
-    # Write results to the output file
-    with open(output_file_path, 'w') as outfile:
-        for result in results:
-            outfile.write(str(result))
-            
-neg = '~'
-
-
-# directed graph class
-#  adapted from:
-#  src: https://www.geeksforgeeks.org/generate-graph-using-dictionary-python/
+# Directed graph class for 2-SAT checking
 class dir_graph:
     def __init__(self):
-        # create an empty directed graph, represented by a dictionary
-        #  The dictionary consists of keys and corresponding lists
-        #  Key = node u , List = nodes, v, such that (u,v) is an edge
         self.graph = defaultdict(set)
         self.nodes = set()
 
-    # Function that adds an edge (u,v) to the graph
-    #  It finds the dictionary entry for node u and appends node v to its list
-    # performance: O(1)
     def addEdge(self, u, v):
         self.graph[u].add(v)
         self.nodes.add(u)
         self.nodes.add(v)
 
-    # Function that outputs the edges of all nodes in the graph
-    #  prints all (u,v) in the set of edges of the graoh
-    # performance: O(m+n) m = #edges , n = #nodes
-    def print(self):
-        edges = []
-        # for each node in graph
-        for node in self.graph:
-            # for each neighbour node of a single node
-            for neighbour in self.graph[node]:
-                # if edge exists then append
-                edges.append((node, neighbour))
-        return edges
-
-
-# 2-CNF class
-#  Class storing a boolean formula in Conjunctive Normal Form of literals
-#  where the size of clauses is at most 2
-#  -NOTATION-
-#    The CNF is represented as a list of lists
-#    e.g [[x, y], [k, z]] == (x or y) and (k or z)
-#    i.e Conjunction of inner lists , where the inner lists are disjunctions
-#    of literals
-#    Negation is represented with ~ .  ~x == negation of literal x
-# class two_cnf:
-class two_cnf:
-    def __init__(self):
-        self.con = []
-
-    # adds a clause to the CNF
-    # performance O(1)
-    def add_clause(self, clause):
-        if len(clause) <= 2:
-            self.con.append(clause)
-        else:
-            print("error: clause contains > 2 literals")
-
-    # returns a set of all the variables in the CNF formula
-    def get_variables(self):
-        vars = set()
-        for clause in self.con:
-            for literal in clause:
-                vars.add(literal)
-        return vars
-
-    def print(self):
-        print(self.con)
-
-
-# helper function that applies the double negation rule to a formula
-#   the function removes all occurrences ~~ from the formula
-def double_neg(formula):
-    return formula.replace((neg+neg), '')
-
-
-# Function that performs Depth First Search on a directed graph
-# O(|V|+|E|)
+# Helper function to perform DFS
 def DFS(dir_graph, visited, stack, scc):
     for node in dir_graph.nodes:
         if node not in visited:
             explore(dir_graph, visited, node, stack, scc)
 
-
-# DFS helper function that 'explores' as far as possible from a node
+# Explore a node in DFS
 def explore(dir_graph, visited, node, stack, scc):
     if node not in visited:
         visited.append(node)
@@ -229,24 +74,15 @@ def explore(dir_graph, visited, node, stack, scc):
         scc.append(node)
     return visited
 
-
-# Function that generates the transpose of a given directed graph
-# Performance O(|V|+|E|)
+# Transpose the directed graph
 def transpose_graph(d_graph):
     t_graph = dir_graph()
-    # for each node in graph
     for node in d_graph.graph:
-        # for each neighbour node of a single node
         for neighbour in d_graph.graph[node]:
             t_graph.addEdge(neighbour, node)
     return t_graph
 
-
-# Function that finds all the strongly connected components in a given graph
-# Implementation of Kosaraju’s algorithm
-# Performance O(|V|+|E|) for a directed graph G=(V,E)
-# IN : directed graph, G
-# OUT: list of lists containing the strongly connected components of G
+# Kosaraju's algorithm to find strongly connected components
 def strongly_connected_components(dir_graph):
     stack = []
     sccs = []
@@ -262,56 +98,83 @@ def strongly_connected_components(dir_graph):
             sccs.append(scc)
     return sccs
 
-
-# Function that finds a contradiction in a list of strong connected components
-# if [a , b , ~a,  c, a] is a connected component then the function returns T
-# since a -> ~a -> a exists
-# sccs = Strongly Connected Components
-#   It is a list of lists representing the connected components
+# Check if there is a contradiction in the SCCs
 def find_contradiction(sccs):
     for component in sccs:
         for literal in component:
             for other_literal in component[component.index(literal):]:
-                if other_literal == double_neg(neg + literal):
+                if other_literal == "~" + literal:
                     return True
     return False
 
-
-# Function that determines if a given 2-CNF is Satisfiable or not
+# Check if a given 2-CNF is satisfiable
 def two_sat_solver(two_cnf_formula):
-    print("Checking if the following 2-CNF is Satisfiable in linear time ")
-    two_cnf_formula.print()
-    # setup the edges of the graph
-    # G = (V,E) , V = L U ~L where L = set of variables in 2-CNF
-    # E =
-    # {(~u,v),(~v,u) | for all clauses [u,v] } U {(~u,u) | for all clauses [u]}
     graph = dir_graph()
-    for clause in two_cnf_formula.con:
-        if len(clause) == 2:
-            u = clause[0]
-            v = clause[1]
-            graph.addEdge(double_neg(neg+u), v)
-            graph.addEdge(double_neg(neg+v), u)
+    for clause in two_cnf_formula:
+        u = clause[0]
+        v = clause[1]
+        graph.addEdge("~" + u, v)
+        graph.addEdge("~" + v, u)
+    
+    sccs = strongly_connected_components(graph)
+    return not find_contradiction(sccs)
+
+# Convert the input data to 2-SAT format
+def convert_to_2sat(instances):
+    results = []
+    
+    for instance in instances:
+        num_switches = instance['num_switches']
+        num_lights = instance['num_lights']
+        initial_state = instance['initial_state']
+        connections = instance['connections']
+        
+        # Create a 2-CNF formula based on the initial state of the lights
+        two_cnf_formula = []
+        
+        # We need to ensure that if the light is ON, we can turn it OFF, and vice versa
+        for j in range(num_lights):
+            if initial_state[j] == 1:  # Light L_j is ON
+                connected_switches = []
+                for i in range(num_switches):
+                    if (j + 1) in connections[i]:  # +1 because lights are 1-indexed
+                        connected_switches.append(f"S_{i + 1}")
+                
+                if connected_switches:
+                    # To turn the light off, at least one of the connected switches should be ON
+                    two_cnf_formula.append([f"~S_{i + 1}", f"L_{j + 1}"])  # Need to turn off L_j
+            else:  # Light L_j is OFF
+                connected_switches = []
+                for i in range(num_switches):
+                    if (j + 1) in connections[i]:
+                        connected_switches.append(f"S_{i + 1}")
+                
+                if connected_switches:
+                    # For OFF lights, we need to make sure they stay OFF
+                    two_cnf_formula.append([f"S_{i + 1}", f"~L_{j + 1}"])  # Make sure L_j stays OFF
+
+        # Check if the 2-CNF formula is satisfiable
+        if two_sat_solver(two_cnf_formula):
+            results.append("yes")
         else:
-            graph.addEdge(double_neg(neg+clause[0]), clause[0])
-    if not find_contradiction(strongly_connected_components(graph)):
-        print("2-CNF Satisfiable")
-    else:
-        print("2-CNF not Satisfiable")
+            results.append("no")
+    
+    return results
 
 
-# [a, b, a, c, ~b, d]
-# ======= 2-CNF setup =======
-# formula = two_cnf()
-# formula.add_clause(['a', 'b'])
-# formula.add_clause(['~a', 'b'])
-# formula.add_clause(['a', '~b'])
-# formula.add_clause(['~a', '~b'])
-two_sat_solver(formula)
+# Function to process input and output
+def can_turn_off_lights(input_file_path, output_file_path):
+    instances = parse_input(input_file_path)
+    results = convert_to_2sat(instances)
+    
+    with open(output_file_path, 'w') as outfile:
+        for result in results:
+            outfile.write(result + "\n")
 
 
 '''
     To test your function, you can uncomment the following command with the the input/output
     files paths that you want to read from/write to.
 '''
-# can_turn_off_lights('inputs/input2.txt', 'output.txt')
+
+can_turn_off_lights('inputs/input3.txt', 'output.txt')
