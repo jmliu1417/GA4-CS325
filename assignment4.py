@@ -8,6 +8,7 @@
 '''
 from collections import defaultdict
 
+#parsing inputs into an instance dictionary or class format
 def parse_input(file_path):
     instances = []
     
@@ -49,27 +50,85 @@ def parse_input(file_path):
     
     return instances
 
-# Example usage
-file_path = 'inputs/input2.txt'  # Adjust the path as necessary
-instances = parse_input(file_path)
+# file_path = 'inputs/input1.txt'  # Adjust the path as necessary
+# instances = parse_input(file_path)
 
-# Print the parsed instances for verification
-for i, instance in enumerate(instances):
-    print(f"Instance {i + 1}:")
-    print(f"  Number of Switches: {instance['num_switches']}")
-    print(f"  Number of Lights: {instance['num_lights']}")
-    print(f"  Initial State: {instance['initial_state']}")
-    print(f"  Connections: {instance['connections']}")
+# # Print the parsed instances for verification
+# for i, instance in enumerate(instances):
+#     print(f"Instance {i + 1}:")
+#     print(f"  Number of Switches: {instance['num_switches']}")
+#     print(f"  Number of Lights: {instance['num_lights']}")
+#     print(f"  Initial State: {instance['initial_state']}")
+#     print(f"  Connections: {instance['connections']}")
+
+class Formula:
+    def __init__(self):
+        self.clauses = []
+
+    def add_clause(self, clause):
+        self.clauses.append(clause)
+
+    def __str__(self):
+        return '\n'.join([' '.join(clause) for clause in self.clauses])
+
+def convert_to_2sat(instances):
+    formula = Formula()
     
+    for instance in instances:
+        num_switches = instance['num_switches']
+        num_lights = instance['num_lights']
+        initial_state = instance['initial_state']
+        connections = instance['connections']
+        
+        # Create clauses based on the initial state of the lights
+        for j in range(num_lights):
+            if initial_state[j] == 1:  # Light L_j is ON
+                # We need at least one switch connected to L_j to be ON
+                connected_switches = []
+                for i in range(num_switches):
+                    if (j + 1) in connections[i]:  # +1 because lights are 1-indexed
+                        connected_switches.append(f'S_{i + 1}')  # Switches are also 1-indexed
+                
+                # Create the clause: (S_i1 OR S_i2 OR ... OR S_ik) => ~L_j
+                if connected_switches:
+                    # We can create a clause for each switch
+                    for switch in connected_switches:
+                        formula.add_clause([switch, f'~L_{j + 1}'])  # S_i OR ~L_j
+
+    return formula
+
+# Example usage
+file_path = 'inputs/input1.txt'  # Adjust the path as necessary
+instances = parse_input(file_path)  # Assuming parse_input function is defined
+
+formula = convert_to_2sat(instances)
+
+# Print the resulting clauses
+print(formula)
 
 
+# def convertor(input_file_path):
+#     instances = parse_input(input_file_path)
+    
+#     m = {instances['num_switches']}
+#     n = {instances['num_lights']}
+#     initial_state = {instances['initial_state']}
+#     connections = {instances['connections']}
+    
+#     clauses = []
+    
+#     for instance in n:
+        
+        
+    
+    
+    
 def can_turn_off_lights(input_file_path, output_file_path):
     '''
         This function will contain your code.  It wil read from the file <input_file_path>,
         and will write its output to the file <output_file_path>.
     '''
-    with open(input_file_path, 'r') as infile:
-        lines = infile.readlines()
+    instances = parse_input(input_file_path)
         
     results = []
     formula = None
@@ -297,7 +356,7 @@ def two_sat_solver(two_cnf_formula):
 # formula.add_clause(['~a', 'b'])
 # formula.add_clause(['a', '~b'])
 # formula.add_clause(['~a', '~b'])
-# two_sat_solver(formula)
+two_sat_solver(formula)
 
 
 '''
