@@ -6,16 +6,125 @@
 
     Also, I will use <python3> to run this code.
 '''
+from collections import defaultdict
+
+def parse_input(file_path):
+    instances = []
+    
+    with open(file_path, 'r') as infile:
+        lines = infile.readlines()
+    
+    current_instance = None
+    
+    for line in lines:
+        line = line.strip()
+        
+        if line == "***":
+            # If we were already processing an instance, save it
+            if current_instance is not None:
+                instances.append(current_instance)
+            # Start a new instance
+            current_instance = {
+                'num_switches': 0,
+                'num_lights': 0,
+                'initial_state': [],
+                'connections': []
+            }
+        elif current_instance is not None:
+            if current_instance['num_switches'] == 0 and current_instance['num_lights'] == 0:
+                # First line of the instance: number of switches and lights
+                n, m = map(int, line.split(','))
+                current_instance['num_switches'] = n
+                current_instance['num_lights'] = m
+            elif len(current_instance['initial_state']) == 0:
+                # Second line of the instance: initial state of lights
+                current_instance['initial_state'] = list(map(int, line.split(',')))
+            else:
+                # Following lines: connections for each switch
+                current_instance['connections'].append(list(map(int, line.split(','))))
+    
+    # Don't forget to add the last instance if it exists
+    if current_instance is not None:
+        instances.append(current_instance)
+    
+    return instances
+
+# Example usage
+file_path = 'inputs/input2.txt'  # Adjust the path as necessary
+instances = parse_input(file_path)
+
+# Print the parsed instances for verification
+for i, instance in enumerate(instances):
+    print(f"Instance {i + 1}:")
+    print(f"  Number of Switches: {instance['num_switches']}")
+    print(f"  Number of Lights: {instance['num_lights']}")
+    print(f"  Initial State: {instance['initial_state']}")
+    print(f"  Connections: {instance['connections']}")
+    
+
 
 def can_turn_off_lights(input_file_path, output_file_path):
     '''
         This function will contain your code.  It wil read from the file <input_file_path>,
         and will write its output to the file <output_file_path>.
     '''
-    pass
+    with open(input_file_path, 'r') as infile:
+        lines = infile.readlines()
+        
+    results = []
+    formula = None
+    
+    # for line in lines:
+    #     line = line.strip()
+    #     if line.startswith("***"):
+    #         if formula != None:
+    #             result = two_sat_solver(formula)
+    #             results.append(result)
+            
+    #         formula = two_cnf()
+    #     else:
+    #         if formula is not None:
+    #             clause = line.split(',')
+    #             clause = [literal.strip() for literal in clause]
+    #             formula.add_clause(clause)
+    # if formula is not None:
+    #     result = two_sat_solver(formula)
+    #     results.append(result)
+    
+    m = 0
+    n = 0
+    lights = {}
+    connections = {}
+    
+    for line in lines:
+        line = line.strip()
+        if line.startswith("***"):
+            # nums = line.split(',')
+            # m = nums[0]
+            # n = nums[1]
+            continue
+        else:
+            
+            print("help")
+            
+    #         if formula is not None:
+    #             clause = line.split(',')
+    #             clause = [literal.strip() for literal in clause]
+    #             formula.add_clause(clause)
+    # if formula is not None:
+    #     result = two_sat_solver(formula)
+    #     results.append(result)
 
-from collections import defaultdict
 
+    # Write results to the output file
+    with open(output_file_path, 'w') as outfile:
+        for result in results:
+            outfile.write(str(result))
+            
+    def input_converter(n, m, light_arr, connections_arr):
+        print ("nothing")
+
+    print(str(m))
 neg = '~'
 
 
@@ -183,16 +292,16 @@ def two_sat_solver(two_cnf_formula):
 
 # [a, b, a, c, ~b, d]
 # ======= 2-CNF setup =======
-formula = two_cnf()
-formula.add_clause(['a', 'b'])
-formula.add_clause(['~a', 'b'])
-formula.add_clause(['a', '~b'])
-formula.add_clause(['~a', '~b'])
-two_sat_solver(formula)
+# formula = two_cnf()
+# formula.add_clause(['a', 'b'])
+# formula.add_clause(['~a', 'b'])
+# formula.add_clause(['a', '~b'])
+# formula.add_clause(['~a', '~b'])
+# two_sat_solver(formula)
 
 
 '''
     To test your function, you can uncomment the following command with the the input/output
     files paths that you want to read from/write to.
 '''
-# can_turn_off_lights('', '')
+# can_turn_off_lights('inputs/input2.txt', 'output.txt')
