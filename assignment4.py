@@ -128,62 +128,13 @@ def can_turn_off_lights(input_file_path, output_file_path):
         This function will contain your code.  It wil read from the file <input_file_path>,
         and will write its output to the file <output_file_path>.
     '''
-    instances = parse_input(input_file_path)
-        
-    results = []
-    formula = None
-    
-    # for line in lines:
-    #     line = line.strip()
-    #     if line.startswith("***"):
-    #         if formula != None:
-    #             result = two_sat_solver(formula)
-    #             results.append(result)
-            
-    #         formula = two_cnf()
-    #     else:
-    #         if formula is not None:
-    #             clause = line.split(',')
-    #             clause = [literal.strip() for literal in clause]
-    #             formula.add_clause(clause)
-    # if formula is not None:
-    #     result = two_sat_solver(formula)
-    #     results.append(result)
-    
-    m = 0
-    n = 0
-    lights = {}
-    connections = {}
-    
-    for line in lines:
-        line = line.strip()
-        if line.startswith("***"):
-            # nums = line.split(',')
-            # m = nums[0]
-            # n = nums[1]
-            continue
-        else:
-            
-            print("help")
-            
-    #         if formula is not None:
-    #             clause = line.split(',')
-    #             clause = [literal.strip() for literal in clause]
-    #             formula.add_clause(clause)
-    # if formula is not None:
-    #     result = two_sat_solver(formula)
-    #     results.append(result)
-
+  
 
     # Write results to the output file
     with open(output_file_path, 'w') as outfile:
         for result in results:
             outfile.write(str(result))
             
-    def input_converter(n, m, light_arr, connections_arr):
-        print ("nothing")
-
-    print(str(m))
 neg = '~'
 
 
