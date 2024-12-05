@@ -9,65 +9,6 @@
 from collections import defaultdict
 
 #parsing inputs into an instance dictionary or class format
-
-                
-
-    
-    # current_instance = None
-    
-    # for line in lines:
-    #     line = line.strip()
-        
-    #     if line == "***":
-    #         # If we were already processing an instance, save it
-    #         if current_instance is not None:
-    #             instances.append(current_instance)
-    #         # Start a new instance
-    #         current_instance = {
-    #             'num_switches': 0,
-    #             'num_lights': 0,
-    #             'initial_state': [],
-    #             'connections': []
-    #         }
-    #     elif current_instance is not None:
-    #         if current_instance['num_switches'] == 0 and current_instance['num_lights'] == 0:
-    #             # First line of the instance: number of switches and lights
-    #             n, m = map(int, line.split(','))
-    #             current_instance['num_switches'] = n
-    #             current_instance['num_lights'] = m
-    #         elif len(current_instance['initial_state']) == 0:
-    #             # Second line of the instance: initial state of lights
-    #             current_instance['initial_state'] = list(map(int, line.split(',')))
-    #         else:
-    #             # Following lines: connections for each switch
-    #             current_instance['connections'].append(list(map(int, line.split(','))))
-    
-    # # Don't forget to add the last instance if it exists
-    # if current_instance is not None:
-    #     instances.append(current_instance)
-        
-    # bothArrays = []
-    # for instance in instances:
-    #     instance1 = []
-    #     for i in range: instance['num_lights']
-    #     for j in instance['initial_state']:
-    #                 instance1.append()
-            
-    
-    # return instances
-    
-def can_turn_off_lights(input_file_path, output_file_path):
-    '''
-        This function will contain your code.  It wil read from the file <input_file_path>,
-        and will write its output to the file <output_file_path>.
-    '''
-  
-
-    # # Write results to the output file
-    # with open(output_file_path, 'w') as outfile:
-    #     for result in results:
-    #         outfile.write(str(result))
-            
 neg = '~'
 
 
@@ -211,7 +152,7 @@ def find_contradiction(sccs):
 
 
 # Function that determines if a given 2-CNF is Satisfiable or not
-def two_sat_solver(two_cnf_formula):
+def two_sat_solver(two_cnf_formula):    
     print("Checking if the following 2-CNF is Satisfiable in linear time ")
     two_cnf_formula.print()
     # setup the edges of the graph
@@ -228,107 +169,13 @@ def two_sat_solver(two_cnf_formula):
         else:
             graph.addEdge(double_neg(neg+clause[0]), clause[0])
     if not find_contradiction(strongly_connected_components(graph)):
-        print("2-CNF Satisfiable")
+        return("yes")
+
     else:
-        print("2-CNF not Satisfiable")
-
-
-
-# def convert_to_2sat(instances):
-#     formula = two_cnf()
-    
-#     for instance in instances:
-#         num_switches = instance['num_switches']
-#         num_lights = instance['num_lights']
-#         initial_state = instance['initial_state']
-#         connections = instance['connections']
+        return("no")
         
-#         # Create clauses based on the initial state of the lights
-#         for j in range(num_lights):
-#             if initial_state[j] == 1:  # Light L_j is ON
-#                 # We need at least one switch connected to L_j to be ON
-#                 connected_switches = []
-#                 for i in range(num_switches):
-#                     if (j) in connections[i]:  # +1 because lights are 1-indexed
-#                         connected_switches.append(f'S_{i + 1}')  # Switches are also 1-indexed
-                
-#                 # Create the clause: (S_i1 OR S_i2 OR ... OR S_ik) => ~L_j
-#                 if connected_switches:
-#                     # We can create a clause for each switch
-#                     for switch in connected_switches:
-#                         formula.add_clause([switch, f'~L_{j + 1}'])  # S_i OR ~L_j
-                
-#         two_sat_solver(formula)
-
-# def convert_to_2sat(instances):
-#     formula = two_cnf()  # Initialize a 2-CNF formula
-    
-#     for instance in instances:
-#         num_switches = instance['num_switches']
-#         num_lights = instance['num_lights']
-#         initial_state = instance['initial_state']
-#         connections = instance['connections']
-        
-#         # Create clauses based on the initial state of the lights
-#         for j in range(num_lights):
-#             if initial_state[j] == 1:  # Light L_j is initially ON
-#                 # Collect switches connected to L_j
-#                 connected_switches = []
-#                 for i in range(num_switches):
-#                     if (j + 1) in connections[i]:  # Lights are 1-indexed
-#                         connected_switches.append(f'S_{i + 1}')  # Switches are also 1-indexed
-                
-#                 # Create the clause: (S_i1 OR S_i2 OR ... OR S_ik)
-#                 if connected_switches:
-#                     formula.add_clause(connected_switches)
-#             # Otherwise, no clauses needed for OFF lights
-            
-#         # Add a clause to ensure all lights can be off simultaneously
-#         for i in range(num_switches):
-#             formula.add_clause([f'~S_{i + 1}'])  # Ensure switches can toggle off lights
-
-#         two_sat_solver(formula)
-
-# def convert_to_2sat(instances):
-#     results = []
-    
-#     for instance in instances:
-#         formula = two_cnf()
-#         num_switches = instance['num_switches']
-#         num_lights = instance['num_lights']
-#         initial_state = instance['initial_state']
-#         connections = instance['connections']
-        
-#         # Encode light dependencies
-#         for j in range(num_lights):
-#             if initial_state[j] == 1:  # Light L_j is initially ON
-#                 # At least one connected switch must toggle it off
-#                 clause = []
-#                 for i in range(num_switches):
-#                     if (j + 1) in connections[i]:  # Light indices are 1-based
-#                         clause.append(f'S_{i + 1}')  # Switch indices are 1-based
-#                 if clause:
-#                     formula.add_clause(clause)
-        
-#         # Add constraints for toggling
-#         for i in range(num_switches):
-#             connected_lights = connections[i]
-#             for light in connected_lights:
-#                 # If switch toggles, it affects the connected light's state
-#                 formula.add_clause([f'~S_{i + 1}', f'~L_{light}'])  # Switch toggle => Light can turn off
-
-#         # Solve the formula
-#         two_sat_solver(formula)
-    
 
 
-        
-   # print(formula)
-    #return formula
-
-# Example usage
-file_path = 'inputs/input2.txt'  # Adjust the path as necessary
-instances = parse_input(file_path)  # Assuming parse_input function is defined
 
 
 # for i, instance in enumerate(instances):
@@ -338,16 +185,76 @@ instances = parse_input(file_path)  # Assuming parse_input function is defined
 #     print(f"  Initial State: {instance['initial_state']}")
 #     print(f"  Connections: {instance['connections']}")
 
-#convert_to_2sat(instances)
-# two_sat_solver(formula)
 
-# Print the resulting clauses
-# print(formula)
+def can_turn_off_lights(input_file_path, output_file_path):
+    '''
+    This function reads the input file, processes two instances of the problem,
+    and writes the results to the output file.
+    '''
 
+    def parse_instance(input_file, num_switches, num_bulbs):
+        '''
+        Parse a single instance of the problem and return the circuit representation.
+        '''
+        bulb_states = list(map(int, input_file.readline().strip().split(',')))
+
+        # Initialize the circuit: one entry per bulb with its initial state
+        circuit = [[state] for state in bulb_states]
+
+        # Add connections for each switch
+        for switch in range(1, num_switches + 1):
+            connected_bulbs = list(map(int, input_file.readline().strip().split(',')))
+            for bulb in connected_bulbs:
+                circuit[bulb - 1].append(switch)
+
+        return circuit
+
+    def build_cnf_formula(circuit):
+        '''
+        Convert the circuit representation into a 2-CNF formula.
+        '''
+        formula = two_cnf()
+
+        for bulb in circuit:
+            if len(bulb) < 3:
+                # Bulbs without enough connections are not solvable
+                continue
+
+            bulb_state = bulb[0]
+            switch1 = str(bulb[1])
+            switch2 = str(bulb[2])
+
+            if bulb_state == 0:
+                # Bulb initially off: (~switch1 OR switch2) AND (switch1 OR ~switch2)
+                formula.add_clause([switch1, f"~{switch2}"])
+                formula.add_clause([f"~{switch1}", switch2])
+            else:
+                # Bulb initially on: (switch1 OR switch2) AND (~switch1 OR ~switch2)
+                formula.add_clause([switch1, switch2])
+                formula.add_clause([f"~{switch1}", f"~{switch2}"])
+
+        return formula
+
+    def process_instance(input_file):
+        '''
+        Process a single instance and return whether all lights can be turned off.
+        '''
+        num_switches, num_bulbs = map(int, input_file.readline().strip().split(','))
+        circuit = parse_instance(input_file, num_switches, num_bulbs)
+        formula = build_cnf_formula(circuit)
+        return two_sat_solver(formula)
+
+    # Main function logic
+    with open(input_file_path, "r") as input_file, open(output_file_path, "w") as output_file:
+        for _ in range(2):  # Two instances to process
+            input_file.readline()  # Skip the *** line
+            result = process_instance(input_file)
+            output_file.write(result + "\n")
 
 
 '''
     To test your function, you can uncomment the following command with the the input/output
     files paths that you want to read from/write to.
-'''
-# can_turn_off_lights('inputs/input2.txt', 'output.txt')
+''' 
+can_turn_off_lights('inputs/input3.txt', 'output.txt')
+
